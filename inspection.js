@@ -38,13 +38,13 @@ export function buildInspection() {
   const rings = [];
   const camU = (x, y, z, rx = 0, rz = 0) => { const g = new THREE.Group(); g.position.set(x, y, z); g.rotation.set(rx, 0, rz); root.add(g);
     rb(0.09, 0.16, 0.09, M.black, 0, 0, 0, g, 0.01); bx(0.092, 0.03, 0.092, M.purple, 0, 0.05, 0, g); cyl(0.032, 0.032, 0.08, M.gunD, 0, -0.12, 0, g); cyl(0.025, 0.025, 0.005, glow(0x113355, 1), 0, -0.162, 0, g, 16, false);
-    const rm = glow(0xcfe6ff, 2.2); rings.push(rm); const r = add(new THREE.TorusGeometry(0.075, 0.014, 8, 28), rm, 0, -0.17, 0, g, false); r.rotation.x = Math.PI / 2; add(new THREE.TorusGeometry(0.09, 0.008, 6, 28), M.gun, 0, -0.17, 0, g).rotation.x = Math.PI / 2;
+    const rm = glow(0xcfe6ff, 1.0); rings.push(rm); const r = add(new THREE.TorusGeometry(0.075, 0.014, 8, 28), rm, 0, -0.17, 0, g, false); r.rotation.x = Math.PI / 2; add(new THREE.TorusGeometry(0.09, 0.008, 6, 28), M.gun, 0, -0.17, 0, g).rotation.x = Math.PI / 2;
     tube([[0, 0.08, 0], [0.04, 0.16, 0], [0.12, 0.2, 0]], 0.008, M.black, g); return g; };
   camU(-0.1, 1.88, -0.22); camU(-0.1, 1.88, 0.22); camU(-0.75, 1.45, 0.5, -0.7, 0.3); camU(0.6, 1.45, -0.5, 0.7, -0.3);
   // 激光发射器 + 蓝色扫描光幕
-  rb(0.12, 0.08, 0.5, M.black, 0.45, 2.0, 0, root, 0.01); bx(0.02, 0.01, 0.46, glow(0x5fd0ff, 3), 0.45, 1.955, 0);
-  const beam = new THREE.Mesh(new THREE.PlaneGeometry(0.5, 1.05), new THREE.MeshBasicMaterial({ color: 0x5fc8ff, transparent: true, opacity: 0.3, side: THREE.DoubleSide, blending: THREE.AdditiveBlending, depthWrite: false })); beam.rotation.y = Math.PI / 2; beam.position.set(0.45, 1.42, 0); root.add(beam);
-  const line = bx(0.02, 0.004, 0.46, glow(0x7fd8ff, 5), 0.45, 0.873, 0);
+  rb(0.12, 0.08, 0.5, M.black, 0.45, 2.0, 0, root, 0.01); bx(0.02, 0.01, 0.46, glow(0x5fd0ff, 1.4), 0.45, 1.955, 0);
+  const beam = new THREE.Mesh(new THREE.PlaneGeometry(0.5, 1.05), new THREE.MeshBasicMaterial({ color: 0x5fc8ff, transparent: true, opacity: 0.14, side: THREE.DoubleSide, blending: THREE.AdditiveBlending, depthWrite: false })); beam.rotation.y = Math.PI / 2; beam.position.set(0.45, 1.42, 0); root.add(beam);
+  const line = bx(0.02, 0.004, 0.46, glow(0x7fd8ff, 2.2), 0.45, 0.873, 0);
   // ---- 剔除气缸 + 推板 + 滑槽 + NG 箱 ----
   cyl(0.045, 0.045, 0.34, M.alu, 0.95, 0.95, -0.5).rotation.x = Math.PI / 2; cyl(0.05, 0.05, 0.03, M.gunD, 0.95, 0.95, -0.33).rotation.x = Math.PI / 2; cyl(0.05, 0.05, 0.03, M.gunD, 0.95, 0.95, -0.67).rotation.x = Math.PI / 2;
   const rod = cyl(0.012, 0.012, 0.3, M.steel, 0.95, 0.95, -0.2); rod.rotation.x = Math.PI / 2; const pad = rb(0.22, 0.1, 0.025, M.purple, 0.95, 0.95, -0.05, root, 0.008);
@@ -64,8 +64,8 @@ export function buildInspection() {
   for (const sx of [-1.2, 1.2]) for (const sz of [-0.74, 0.74]) bolt(sx, H + 0.087, sz, 'y');
   flush();
   const update = (t) => { beltT.offset.x = -t * 0.25 % 1; prod.forEach((p, i) => { p.position.x = -1.6 + ((t * 0.18 + i / 3) % 1) * 3.2; });
-    beam.position.x = line.position.x = 0.45 + Math.sin(t * 1.6) * 0.35; beam.material.opacity = 0.22 + Math.sin(t * 6) * 0.06;
+    beam.position.x = line.position.x = 0.45 + Math.sin(t * 1.6) * 0.35; beam.material.opacity = 0.14 + Math.sin(t * 6) * 0.04;
     const c = (t % 6) / 6, push = Math.sin(Math.min(1, Math.max(0, (c - 0.7) / 0.2)) * Math.PI); rod.position.z = -0.2 + push * 0.3; pad.position.z = -0.05 + push * 0.3;
-    rings.forEach((m, i) => m.emissiveIntensity = 1.6 + (Math.sin(t * 9 + i) > 0.9 ? 2.5 : 0)); lit[0].emissiveIntensity = 3 + Math.sin(t * 3) * 0.4; };
+    rings.forEach((m, i) => m.emissiveIntensity = 0.9 + (Math.sin(t * 9 + i) > 0.9 ? 1.0 : 0)); lit[0].emissiveIntensity = 3 + Math.sin(t * 3) * 0.4; };
   return { root, update };
 }

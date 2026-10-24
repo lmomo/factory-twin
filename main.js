@@ -23,7 +23,7 @@ r.toneMapping = THREE.ACESFilmicToneMapping; r.toneMappingExposure = 1.22; docum
 const scene = new THREE.Scene(); scene.background = new THREE.Color(0x05070a); scene.fog = new THREE.Fog(0x05070a, 38, 70);
 scene.environment = new THREE.PMREMGenerator(r).fromScene(new RoomEnvironment(), 0.04).texture; scene.environmentIntensity = 0.4;
 const cam = new THREE.PerspectiveCamera(30, innerWidth / innerHeight, 0.1, 200);
-const HOME = { pos: new THREE.Vector3(-16.5, 33, 22.5), tgt: new THREE.Vector3(-0.2, 0, 0.2) };
+const HOME = { pos: new THREE.Vector3(-13.4, 26.5, 18.4), tgt: new THREE.Vector3(-0.2, 0, 0.2) };
 cam.position.copy(HOME.pos);
 const ctl = new OrbitControls(cam, r.domElement); ctl.target.copy(HOME.tgt); ctl.enableDamping = true; ctl.maxPolarAngle = 1.45;
 
@@ -31,7 +31,7 @@ scene.add(new THREE.HemisphereLight(0xb8c8e0, 0x0a0c10, 0.45));
 const sun = new THREE.DirectionalLight(0xfff1dc, 4.4); sun.position.set(-8, 18, 10); sun.castShadow = true;
 sun.shadow.mapSize.set(2048, 2048); sun.shadow.radius = 1.5; sun.shadow.bias = -0.0004; sun.shadow.normalBias = 0.03;
 Object.assign(sun.shadow.camera, { left: -15, right: 15, top: 12, bottom: -12, near: 1, far: 50 }); scene.add(sun); sun.target.position.set(0, 0, -1); scene.add(sun.target);
-[[0x9a5cff,1.3,-2.4],[0xff8a1e,6.1,1],[0x2fbf62,-4.6,-4.5],[0x39b6ff,8.6,6]].forEach(([c,x,z])=>{const l=new THREE.PointLight(c,7,8,1.8);l.position.set(x,3,z);scene.add(l);});
+[[0x7a64b0,1.3,-2.4],[0x3f9692,6.1,1],[0x4e9a6c,-4.6,-4.5],[0x3f62a0,8.6,6]].forEach(([c,x,z])=>{const l=new THREE.PointLight(c,4,8,1.8);l.position.set(x,3,z);scene.add(l);});
 const rim = new THREE.DirectionalLight(0x5aa8ff, 1.2); rim.position.set(10, 8, -12); scene.add(rim);
 
 // ================= 工具 =================
@@ -52,10 +52,10 @@ const floor = add(new THREE.PlaneGeometry(28, 20), new THREE.MeshStandardMateria
 // 半分辨率实时反射地面
 const refl = new Reflector(new THREE.PlaneGeometry(28, 20), { textureWidth: innerWidth * 0.5, textureHeight: innerHeight * 0.5, color: 0x7a828c }); refl.rotation.x = -Math.PI / 2; scene.add(refl);
 const ZONES = [ // [x0,z0,x1,z1,color,label]
-  [-8.5, -6.8, -0.8, -0.6, 0x2fbf62, ['加工站', 'Machining']],
-  [-0.8, -4.2, 3.6, 0.6, 0x9a5cff, ['检测站', 'Inspection']],
-  [3.6, -1.6, 8.6, 4.4, 0xff8a1e, ['包装站', 'Packaging']],
-  [-8.5, -0.6, 3.6, 6.4, 0x2a55a8, ['上料站', 'Loading']],
+  [-8.5, -6.8, -0.8, -0.6, 0x4e9a6c, ['加工站', 'Machining']],
+  [-0.8, -4.2, 3.6, 0.6, 0x7a64b0, ['检测站', 'Inspection']],
+  [3.6, -1.6, 8.6, 4.4, 0x3f9692, ['包装站', 'Packaging']],
+  [-8.5, -0.6, 3.6, 6.4, 0x3f62a0, ['上料站', 'Loading']],
 ];
 const labelPos = [[-7.0, -1.3], [-0.1, -1.3], [6.4, 3.75], [-2.6, 5.7]];
 ZONES.forEach(([x0, z0, x1, z1, c, [cn, en]], i) => {
@@ -64,11 +64,11 @@ ZONES.forEach(([x0, z0, x1, z1, c, [cn, en]], i) => {
   const tex = canvasTex(256, 256, (g) => { const gr = g.createRadialGradient(128, 128, 20, 128, 128, 180); gr.addColorStop(0, `rgba(${col.r * 255 | 0},${col.g * 255 | 0},${col.b * 255 | 0},0.34)`); gr.addColorStop(1, `rgba(${col.r * 255 | 0},${col.g * 255 | 0},${col.b * 255 | 0},0.16)`); g.fillStyle = gr; g.fillRect(0, 0, 256, 256); });
   const z = new THREE.Mesh(new THREE.PlaneGeometry(w, d), new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false })); z.rotation.x = -Math.PI / 2; z.position.set(cx, 0.004 + i * 0.001, cz); scene.add(z);
   // 发光边线
-  const em = glow(new THREE.Color(c).lerp(new THREE.Color(0x39b6ff), 0.55), 2.0); [[w, 0.06, cx, z0 + 0.03], [w, 0.06, cx, z1 - 0.03], [0.06, d, x0 + 0.03, cz], [0.06, d, x1 - 0.03, cz]].forEach(([a, b, x, zz]) => { const e = new THREE.Mesh(new THREE.PlaneGeometry(a, b), em); e.rotation.x = -Math.PI / 2; e.position.set(x, 0.02, zz); scene.add(e); });
+  const em = glow(new THREE.Color(c).lerp(new THREE.Color(0x39b6ff), 0.4), 1.1); [[w, 0.06, cx, z0 + 0.03], [w, 0.06, cx, z1 - 0.03], [0.06, d, x0 + 0.03, cz], [0.06, d, x1 - 0.03, cz]].forEach(([a, b, x, zz]) => { const e = new THREE.Mesh(new THREE.PlaneGeometry(a, b), em); e.rotation.x = -Math.PI / 2; e.position.set(x, 0.02, zz); scene.add(e); });
   // 地面中英文标注
   const lt = canvasTex(512, 128, (g) => { g.fillStyle = 'rgba(6,14,28,0.55)'; g.fillRect(0, 14, 512, 100); g.fillStyle = '#' + col.getHexString(); g.fillRect(0, 14, 10, 100);
     g.font = 'bold 60px "Noto Sans CJK SC",sans-serif'; g.fillStyle = '#ffffff'; g.textBaseline = 'middle'; g.fillText(cn, 30, 64); g.font = '600 40px "Noto Sans CJK SC",sans-serif'; g.fillStyle = '#' + col.getHexString(); g.fillText(en, 230, 68); });
-  const l = new THREE.Mesh(new THREE.PlaneGeometry(4.2, 1.05), new THREE.MeshBasicMaterial({ map: lt, transparent: true, depthWrite: false })); l.rotation.order = 'YXZ'; l.rotation.set(-Math.PI / 2, -0.66, 0); l.position.set(labelPos[i][0], 0.03, labelPos[i][1]); scene.add(l);
+  const l = new THREE.Mesh(new THREE.PlaneGeometry(4.2, 1.05), new THREE.MeshBasicMaterial({ map: lt, transparent: true, depthWrite: false, depthTest: false })); l.renderOrder = 10; l.rotation.order = 'YXZ'; l.rotation.set(-Math.PI / 2, -0.66, 0); l.position.set(labelPos[i][0], 0.03, labelPos[i][1]); scene.add(l);
 });
 // 黄色通道标线
 const lineM = new THREE.MeshBasicMaterial({ color: 0xffc629 });
@@ -152,7 +152,7 @@ for (let i = 0; i < 3; i++) { const p = add(new RoundedBoxGeometry(1.0, 0.15, 1.
 // 前区：码垛工位（托盘 + 直线输送尾段 + 灯带）
 { const g = new THREE.Group(); g.position.set(1.2, 0, 6.0); scene.add(g);
   add(new RoundedBoxGeometry(3.2, 0.7, 0.8, 3, 0.06), mat(0x2a3140, 0.85, 0.28), 0, 0.42, 0, g); add(new THREE.BoxGeometry(3.0, 0.02, 0.62), new THREE.MeshStandardMaterial({ map: beltTex, roughness: 0.85 }), 0, 0.78, 0, g);
-  add(new THREE.BoxGeometry(3.22, 0.03, 0.02), glow(0x39b6ff, 3), 0, 0.6, 0.41, g, false);
+  add(new THREE.BoxGeometry(3.22, 0.03, 0.02), glow(0x39b6ff, 1.2), 0, 0.6, 0.41, g, false);
   for (let i = 0; i < 4; i++) add(new RoundedBoxGeometry(0.36, 0.26, 0.36, 2, 0.03), mat(i % 2 ? 0xc8925a : 0x2f7dff, 0.1, 0.6), -1.2 + i * 0.8, 0.92, 0, g);
   contact(0, 0, 4, 1.6, g);
   for (let i = 0; i < 3; i++) { const x = -3.4 + i * 1.25 + 6; add(new RoundedBoxGeometry(1.0, 0.15, 1.0, 2, 0.02), mat(0x7a5228, 0.1, 0.8), x - 4.6, 0.08, 1.15, g);
@@ -184,9 +184,9 @@ for (let i = 0; i < 3; i++) { const p = add(new RoundedBoxGeometry(1.0, 0.15, 1.
 
 // ================= 机械臂 ×4 =================
 const ARMPOS = [[-1.8, -0.3, 0.2, 0.0], [-4.4, -1.7, Math.PI / 2, 1.5], [1.6, -0.2, -Math.PI / 2, 3.0], [6.1, -1.5, Math.PI, 4.5]];
-const arms = ARMPOS.map(([x, z, ry, ph]) => { const A = buildArm(); A.root.position.set(x, 0, z); A.root.rotation.y = ry; scene.add(A.root); contact(x, z, 2, 2); A.phase = ph; return A; });
+const arms = ARMPOS.map(([x, z, ry, ph]) => { const A = buildArm(); A.root.position.set(x, 0, z); A.root.rotation.y = ry; A.root.scale.setScalar(1.45); scene.add(A.root); contact(x, z, 2.9, 2.9); A.phase = ph; return A; });
 // 黄黑警示圈
-for (const [x, z] of ARMPOS) for (let i = 0; i < 32; i++) { const seg = new THREE.Mesh(new THREE.RingGeometry(0.95, 1.05, 2, 1, i / 32 * Math.PI * 2, Math.PI * 2 / 32), new THREE.MeshBasicMaterial({ color: i % 2 ? 0x111111 : 0xffc629 })); seg.rotation.x = -Math.PI / 2; seg.position.set(x, 0.018, z); scene.add(seg); }
+for (const [x, z] of ARMPOS) for (let i = 0; i < 32; i++) { const seg = new THREE.Mesh(new THREE.RingGeometry(1.38, 1.5, 2, 1, i / 32 * Math.PI * 2, Math.PI * 2 / 32), new THREE.MeshBasicMaterial({ color: i % 2 ? 0x111111 : 0xffc629 })); seg.rotation.x = -Math.PI / 2; seg.position.set(x, 0.018, z); scene.add(seg); }
 const hero = arms[0]; const nodes = hero.parts; const EXP = nodes.map(n => new THREE.Vector3(...n.exp));
 const labelsEl = document.getElementById('labels');
 const labels = nodes.map(n => { const e = document.createElement('div'); e.className = 'lbl'; e.innerHTML = `<b>${n.name}</b><br>${n.desc}`; labelsEl.appendChild(e); return e; });
@@ -203,7 +203,7 @@ function rackRow(x, z, ry, bays, levels) { const g = new THREE.Group(); g.positi
   inst.castShadow = inst.receiveShadow = true; g.add(inst); contact(0, 0, W + 0.8, 1.6, g); return g; }
 rackRow(5.6, -8.4, 0, 8, 4); rackRow(5.6, -6.7, 0, 8, 4); rackRow(11.6, -4.2, Math.PI / 2, 6, 4);
 // 货架顶灯带
-for (const z of [-8.4, -6.7]) add(new THREE.BoxGeometry(6.8, 0.04, 0.04), glow(0x39b6ff, 3), 5.6, 3.12, z + 0.42, scene, false);
+for (const z of [-8.4, -6.7]) add(new THREE.BoxGeometry(6.8, 0.04, 0.04), glow(0x39b6ff, 1.0), 5.6, 3.12, z + 0.42, scene, false);
 // 堆垛机轨道
 add(new THREE.BoxGeometry(7.8, 0.06, 0.12), mat(0x9aa6b4, 0.9, 0.3), 5.2, 0.03, -7.55);
 const stacker = add(new THREE.BoxGeometry(0.25, 4.0, 0.25), mat(0xf2c230, 0.4, 0.4), 3, 2, -7.55);
@@ -246,7 +246,7 @@ for (let i = 0; i < 3; i++) { add(new RoundedBoxGeometry(0.7, 1.8, 0.5, 2, 0.03)
 
 // ================= 后期 =================
 const comp = new EffectComposer(r); comp.addPass(new RenderPass(scene, cam));
-comp.addPass(new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 0.42, 0.4, 0.9)); comp.addPass(new OutputPass());
+comp.addPass(new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 0.3, 0.35, 1.05)); comp.addPass(new OutputPass());
 
 // ================= 交互 / 动画 =================
 let target = 0, ex = 0; const btn = document.getElementById('btn');

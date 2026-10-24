@@ -20,7 +20,7 @@ export const M = {
   carton: S({ color: 0xc8925a, roughness: 0.85, emissive: 0xff7a1a, emissiveIntensity: 0.08 }),
   tape: S({ color: 0xb08850, roughness: 0.3, metalness: 0.1 }),
   poly: P({ color: 0x8fb4d0, metalness: 0, roughness: 0.06, transparent: true, opacity: 0.16, envMapIntensity: 0.6, depthWrite: false, side: THREE.DoubleSide }),
-  lamp: S({ color: 0, emissive: 0xeaf4ff, emissiveIntensity: 1.1 }),
+  lamp: S({ color: 0, emissive: 0xeaf4ff, emissiveIntensity: 0.6 }),
 };
 const stripeBase = ctex(128, 16, (g) => { g.fillStyle = '#111'; g.fillRect(0, 0, 128, 16); g.fillStyle = '#f2c230'; for (let i = -16; i < 144; i += 16) { g.beginPath(); g.moveTo(i, 16); g.lineTo(i + 8, 0); g.lineTo(i + 16, 0); g.lineTo(i + 8, 16); g.fill(); } });
 export const stripeMat = (rep) => { const t = stripeBase.clone(); t.wrapS = THREE.RepeatWrapping; t.repeat.set(rep, 1); t.needsUpdate = true; return S({ map: t, roughness: 0.55 }); };

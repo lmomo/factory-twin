@@ -3,7 +3,7 @@ import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
 const S = o => new THREE.MeshStandardMaterial(o);
 const DM = {
-  shell: new THREE.MeshPhysicalMaterial({ color: 0xe8edf2, roughness: 0.3, metalness: 0.1, clearcoat: 0.8 }),
+  shell: new THREE.MeshPhysicalMaterial({ color: 0xbcc4cc, roughness: 0.4, metalness: 0.1, clearcoat: 0.4 }),
   dark: S({ color: 0x23272e, roughness: 0.4, metalness: 0.7 }),
   carbon: S({ color: 0x15181c, roughness: 0.5, metalness: 0.4 }),
   prop: S({ color: 0x0e1012, roughness: 0.4, transparent: true, opacity: 0.85 }),
@@ -11,9 +11,9 @@ const DM = {
   batt: S({ color: 0x2b6fd8, roughness: 0.45, metalness: 0.3 }),
   crate: S({ color: 0xe08a2a, roughness: 0.6, metalness: 0.05 }),
   strap: S({ color: 0x222222, roughness: 0.8 }),
-  ledG: S({ color: 0, emissive: 0x3ddc84, emissiveIntensity: 3 }),
-  ledR: S({ color: 0, emissive: 0xff3b3b, emissiveIntensity: 3 }),
-  ledB: S({ color: 0, emissive: 0x39b6ff, emissiveIntensity: 4 }),
+  ledG: S({ color: 0, emissive: 0x3ddc84, emissiveIntensity: 1.8 }),
+  ledR: S({ color: 0, emissive: 0xff3b3b, emissiveIntensity: 1.8 }),
+  ledB: S({ color: 0, emissive: 0x39b6ff, emissiveIntensity: 2 }),
 };
 const mesh = (g, m, p) => { const o = new THREE.Mesh(g, m); o.castShadow = true; p.add(o); return o; };
 export function buildDrone() {
