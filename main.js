@@ -143,8 +143,8 @@ const stripeTex = canvasTex(128, 32, (g) => { g.fillStyle = '#111'; g.fillRect(0
 const seamM = mat(0x0b0e13, 0.5, 0.6), handleM = mat(0xc8d0d8, 1, 0.2), ventG = new THREE.BoxGeometry(0.02, 0.02, 1);
 const vents = (g, x, y, z, n, ry = 0) => { for (let i = 0; i < n; i++) { const v = add(new THREE.BoxGeometry(0.4, 0.025, 0.02), seamM, x, y + i * 0.06, z, g, false); v.rotation.y = ry; } };
 const cncs = [[-6.7, -6.6], [-2.6, -6.6]].map(([x, z]) => { const c = buildCNC(); c.root.position.set(x, 0, z); scene.add(c.root); contact(x, z, 3.8, 2.6); return c; });
-const insp = buildInspection(); insp.root.position.set(1.3, 0, -2.4); scene.add(insp.root); contact(1.3, -2.4, 3.2, 2.2);
-const pack = buildPacker(); pack.root.position.set(6.1, 0, 0.6); scene.add(pack.root); contact(6.1, 0.6, 2.6, 1.8);
+const insp = buildInspection(); insp.root.position.set(1.65, 0, -2.4); scene.add(insp.root); contact(1.65, -2.4, 3.2, 2.2);
+const pack = buildPacker(); pack.root.position.set(6.1, 0, 0.72); scene.add(pack.root); contact(6.1, 0.72, 2.6, 1.8);
 // 上料台
 for (let i = 0; i < 3; i++) { const p = add(new RoundedBoxGeometry(1.0, 0.15, 1.0, 2, 0.02), mat(0x8a5a2a, 0.1, 0.8), -7.6 + i * 1.3, 0.08, 5.7); contact(-7.6 + i * 1.3, 5.7, 1.5, 1.5);
   for (let k = 0; k < 2 + i % 2; k++) add(new RoundedBoxGeometry(0.85, 0.32, 0.85, 2, 0.03), mat([0x2f7dff, 0xe5a02e, 0x2fbf62][(i + k) % 3], 0.05, 0.55), -7.6 + i * 1.3, 0.33 + k * 0.33, 5.7); }
@@ -296,3 +296,17 @@ function loop() {
 }
 window.ready = 1; loop();
 addEventListener('resize', () => { cam.aspect = innerWidth / innerHeight; cam.updateProjectionMatrix(); r.setSize(innerWidth, innerHeight); comp.setSize(innerWidth, innerHeight); });
+
+// ===== 碰撞自检（QA 用）=====
+window.collisionCheck = (steps = 60) => {
+  const boxes = []; const lb = (name, root, x0, y0, z0, x1, y1, z1) => { root.updateMatrixWorld(true); const b = new THREE.Box3(new THREE.Vector3(x0, y0, z0), new THREE.Vector3(x1, y1, z1)).applyMatrix4(root.matrixWorld); boxes.push([name, b]); };
+  lb('inspection', insp.root, -1.32, 0, -0.84, 1.32, 2.42, 0.84);
+  lb('packer', pack.root, -0.92, 0, -0.6, 0.92, 1.8, 0.6); lb('packer-infeed', pack.root, -1.42, 0, -0.3, 1.42, 0.75, 0.3); lb('packer-mag', pack.root, -0.78, 0.6, -1.0, -0.02, 1.45, -0.55);
+  cncs.forEach((c, i) => { c.root.updateMatrixWorld(true); boxes.push(['cnc' + i, new THREE.Box3().setFromObject(c.root)]); });
+  const res = [], tb = new THREE.Box3(), worst = {};
+  arms.forEach((A, ai) => { for (let s = 0; s < steps; s++) { const t = s / steps * 6 - A.phase + 600; animArm(A, t, false); A.root.updateMatrixWorld(true);
+    A.root.traverse(o => { if (!o.isMesh || o.position.y < 0.05 && o.parent === A.root) return; tb.setFromObject(o, true); if (tb.max.y < 0.15) return;
+      for (const [n, b] of boxes) if (tb.intersectsBox(b)) { const ov = Math.min(tb.max.x, b.max.x) - Math.max(tb.min.x, b.min.x), oz = Math.min(tb.max.z, b.max.z) - Math.max(tb.min.z, b.min.z), oy = Math.min(tb.max.y, b.max.y) - Math.max(tb.min.y, b.min.y); const d = Math.min(ov, oz, oy);
+        res.push({ arm: ai, step: s, eq: n, part: o.name || o.geometry.type, depth: +d.toFixed(3), y: +tb.max.y.toFixed(2) }); const k = ai + n; if (!worst[k] || worst[k].depth < d) worst[k] = { arm: ai, step: s, eq: n, depth: +d.toFixed(3) }; } }); } });
+  return { count: res.length, worst: Object.values(worst), boxes: boxes.map(([n, b]) => [n, b.min.toArray().map(v => +v.toFixed(2)), b.max.toArray().map(v => +v.toFixed(2))]), arms: arms.map(A => A.root.position.toArray()) };
+};
